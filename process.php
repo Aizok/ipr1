@@ -70,7 +70,7 @@
                 echo '<p><strong>Заголовок:</strong> ' . htmlspecialchars($ad_title) . '</p>';
                 echo '<p><strong>Категория:</strong> ' . htmlspecialchars($ad_category) . '</p>';
                 echo '<p><strong>Цена:</strong> ' . number_format((float)$price, 2, ',', ' ') . ' руб.</p>';
-                echo '<a href="form.html" class="btn btn-primary mt-3">Подать ещё объявление</a>';
+                echo '<a href="form.html" class="btn btn-primary mt-3">Подать другое объявление</a>';
                 echo '</div>';
             } catch (Exception $e) {
                 echo '<div class="alert alert-danger">';
