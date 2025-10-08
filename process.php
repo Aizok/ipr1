@@ -20,28 +20,47 @@
 
             $errors = [];
 
-            if (empty($ad_title)) $errors[] = "Заголовок объявления обязателен.";
-            if (empty($ad_category)) $errors[] = "Категория обязательна.";
-            if (empty($contact_email)) $errors[] = "Email обязателен.";
+            if ($ad_title === '') {
+                $errors[] = "Заголовок объявления обязателен.";
+            }
+            if ($ad_category === '') {
+                $errors[] = "Категория обязательна.";
+            }
+            if ($contact_email === '') {
+                $errors[] = "Email обязателен.";
+            }
+            if ($price === '' || $price === null) {
+                $errors[] = "Цена обязательна.";
+            }
 
-            if (strlen($ad_title) > 40) $errors[] = "Заголовок не может быть длиннее 40 символов.";
-            if (strlen($ad_category) > 40) $errors[] = "Категория не может быть длиннее 40 символов.";
-            if (strlen($contact_email) > 30) $errors[] = "Email не может быть длиннее 30 символов.";
-            if (strlen($ad_text) > 1000) $errors[] = "Текст объявления не может быть длиннее 1000 символов.";
+            if (mb_strlen($ad_title, 'UTF-8') > 40) {
+                $errors[] = "Заголовок не может быть длиннее 40 символов.";
+            }
+            if (mb_strlen($ad_category, 'UTF-8') > 40) {
+                $errors[] = "Категория не может быть длиннее 40 символов.";
+            }
+            if (mb_strlen($contact_email, 'UTF-8') > 30) {
+                $errors[] = "Email не может быть длиннее 30 символов.";
+            }
+            if (mb_strlen($ad_text, 'UTF-8') > 1000) {
+                $errors[] = "Текст объявления не может быть длиннее 1000 символов.";
+            }
 
-            if (!filter_var($contact_email, FILTER_VALIDATE_EMAIL)) {
+            if ($contact_email !== '' && !filter_var($contact_email, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = "Указан некорректный email.";
             }
 
-            if ($price === '' || !is_numeric($price) || $price < 0) {
-                $errors[] = "Укажите корректную цену (неотрицательное число).";
-            } else {
-                if ($price > 999999.99) {
-                    $errors[] = "Цена не может быть больше 999999.99.";
-                }
-
-                if (preg_match('/^\d+(\.\d{1,2})?$/', $price) === 0) {
-                    $errors[] = "Цена должна содержать не более двух знаков после точки.";
+            if ($price !== '' && $price !== null) {
+                if (!is_numeric($price)) {
+                    $errors[] = "Цена должна быть числом.";
+                } else {
+                    $price = (float)$price;
+                    if ($price < 0) {
+                        $errors[] = "Цена не может быть отрицательной.";
+                    }
+                    if ($price > 999999.99) {
+                        $errors[] = "Цена не может быть больше 999999.99.";
+                    }
                 }
             }
 
@@ -70,6 +89,11 @@
                 echo '<p><strong>Заголовок:</strong> ' . htmlspecialchars($ad_title) . '</p>';
                 echo '<p><strong>Категория:</strong> ' . htmlspecialchars($ad_category) . '</p>';
                 echo '<p><strong>Цена:</strong> ' . number_format((float)$price, 2, ',', ' ') . ' руб.</p>';
+                echo '<p><strong>Контактный email:</strong> ' . htmlspecialchars($contact_email) . '</p>';
+                
+                $display_text = mb_strlen($ad_text, 'UTF-8') > 200 ? mb_substr($ad_text, 0, 200, 'UTF-8') . '...' : $ad_text;
+                echo '<p><strong>Текст объявления:</strong><br><small>' . nl2br(htmlspecialchars($display_text)) . '</small></p>';
+                
                 echo '<a href="form.html" class="btn btn-primary mt-3">Подать другое объявление</a>';
                 echo '</div>';
             } catch (Exception $e) {
